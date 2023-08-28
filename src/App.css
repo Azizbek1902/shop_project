@@ -1,0 +1,28 @@
+.transitionNav {
+  transition: 0.6s all ease;
+}
+.active {
+  display: flex;
+  gap: 15px;
+  color: white;
+  background: #93c5fd;
+  border-radius: 8px;
+  transition: 0.3s all;
+}
+.default {
+  display: flex;
+  gap: 15px;
+  font-size: 20px;
+  color: #93c5fd;
+}
+.default:hover {
+  background: #93c5fd;
+  color: white;
+  border-radius: 8px;
+}
+.shadowCard {
+  box-shadow: 0px 0px 10px rgb(205, 204, 204);
+}
+.shadowShopIcon {
+  box-shadow: 0px 0px 12px rgb(104, 104, 104);
+}
