@@ -22,22 +22,30 @@ export default () => {
   }, [refresh]);
   const handleClik = (data) => {
     dataProduct.map((item) => {
-      if (item.id == data._id) {
+      if (item._id == data._id) {
         if (!item.status) {
-          console.log(item, "item");
-          let newData = {
-            id: data._id,
-            img: data.img,
+          let backData = {
+            media: data.media,
             title: data.title,
             desc: data.desc,
             price: data.price,
             status: true,
           };
-          addItem(data);
+          const id = data._id;
           products
-            .edit(data._id, newData)
+            .edit(id, backData)
             .then()
             .catch((err) => console.log(err));
+          setRefresh(false);
+          let itemData = {
+            id: data._id,
+            media: data.media,
+            title: data.title,
+            desc: data.desc,
+            price: data.price,
+            status: true,
+          };
+          addItem(itemData);
         }
       } else {
         console.log("errr");
@@ -83,7 +91,7 @@ export default () => {
                       });
                     }}
                   >
-                    <img src={item.img} className="rounded-full" alt="" />
+                    <img src={item.media} className="rounded-full" alt="" />
                   </div>
                   <div className="flex py-5 flex-col md:flex-row justify-center md:justify-between gap-3">
                     <h1 className="text-xl font-semibold text-center">

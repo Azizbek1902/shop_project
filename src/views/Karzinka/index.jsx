@@ -4,7 +4,6 @@ import React from "react";
 import { useCart } from "react-use-cart";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { updateCheck } from "../../redux/actions/product";
 import products from "../../services/products";
 
 export default () => {
@@ -38,17 +37,32 @@ export default () => {
       </>
     );
   const hanfldeClik = (data) => {
-    removeItem(data._id);
+    removeItem(data.id);
     let newData = {
-      id: data._id,
-      img: data.img,
+      media: data.media,
       title: data.title,
       desc: data.desc,
       price: data.price,
       status: false,
     };
+    const id = data.id;
     products
-      .edit(data._id, newData)
+      .edit(id, newData)
+      .then()
+      .catch((err) => console.log(err));
+  };
+  const minusFunk = (item) => {
+    updateItemQuantity(item.id, item.quantity - 1);
+    let newData = {
+      media: item.media,
+      title: item.title,
+      desc: item.desc,
+      price: item.price,
+      status: false,
+    };
+    const id = item.id;
+    products
+      .edit(id, newData)
       .then()
       .catch((err) => console.log(err));
   };
@@ -84,7 +98,7 @@ export default () => {
                   <div className="md:p-10 flex items-center p-2 w-full rounded-lg">
                     <div className="flex pt-5 justify-center">
                       <img
-                        src={item.img}
+                        src={item.media}
                         className="rounded-full w-36 h-28"
                         alt=""
                       />
@@ -101,9 +115,7 @@ export default () => {
                         <button
                           className="text-3xl outline-none px-3 pb-1 rounded-md text-white font-medium
          font-sans bg-[#EE8108]"
-                          onClick={() =>
-                            updateItemQuantity(item.id, item.quantity - 1)
-                          }
+                          onClick={() => minusFunk(item)}
                         >
                           -
                         </button>
