@@ -1,15 +1,13 @@
 import { BiLogOut } from "react-icons/bi";
 import { MdAddShoppingCart } from "react-icons/md";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useCart } from "react-use-cart";
-import { useDispatch, useSelector } from "react-redux";
-import { updateCheck } from "../../redux/actions/product";
+import products from "../../services/products";
 
 export default () => {
   const navigate = useNavigate();
-  const dataProduct = useSelector((state) => state.productReducer.products);
-  const dispatch = useDispatch();
+  const [dataProduct, setDataProduct] = useState([]);
   const { state } = useLocation();
   const { addItem } = useCart();
   let keyData = [];
@@ -20,22 +18,32 @@ export default () => {
       valueData.push(value);
     }
   }
+  useEffect(() => {
+    products
+      .getAll()
+      .then((res) => {
+        setDataProduct(res);
+      })
+      .catch((err) => console.log(err));
+  }, []);
   const handleClik = (data) => {
     dataProduct.map((item) => {
-      if (item.id == data.id) {
-        if (!item.checked) {
+      if (item.id == data._id) {
+        if (!item.status) {
           console.log(item, "item");
           let newData = {
-            id: data.id,
+            id: data._id,
             img: data.img,
             title: data.title,
             desc: data.desc,
             price: data.price,
-            checked: true,
+            status: true,
           };
           addItem(data);
-          navigate("/corzinka");
-          dispatch(updateCheck(newData));
+          products
+            .edit(data._id, newData)
+            .then()
+            .catch((err) => console.log(err));
         }
       } else {
         console.log("errr");

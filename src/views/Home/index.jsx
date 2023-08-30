@@ -2,14 +2,24 @@ import { AiFillDelete } from "react-icons/ai";
 import { FiEdit } from "react-icons/fi";
 import React, { useEffect, useState } from "react";
 import products from "../../services/products";
+import category from "../../services/category";
 import { useFormik } from "formik";
 import { BiAddToQueue } from "react-icons/bi";
+import Dropdown from "../../components/Dropdown";
 
 export default () => {
   const [modal, setModal] = useState(false);
   const [dataProduct, setDataProduct] = useState([]);
   const [refresh, setRefresh] = useState(false);
-
+  const [categorys, setCategorys] = useState([]);
+  useEffect(() => {
+    category
+      .getAll()
+      .then((res) => {
+        setCategorys(res);
+      })
+      .catch((err) => console.log(err));
+  }, []);
   useEffect(() => {
     products
       .getAll()
@@ -26,12 +36,14 @@ export default () => {
       price: 0,
       storeCount: 0,
       desc: "",
+      category: {},
     },
     onSubmit: (values) => {
       formData.append("title", values.title);
       formData.append("price", values.price);
       formData.append("storeCount", values.storeCount);
       formData.append("desc", values.desc);
+      formData.append("category", values.category.value);
       formData.append("file", files[0]);
       if (isEdit.type) {
         products
@@ -45,20 +57,22 @@ export default () => {
           .catch((err) => console.log(err));
       }
       formik.resetForm();
-      setModal(false)
+      setModal(false);
       setRefresh(false);
       setIsEdit({ type: false, data: null });
     },
   });
-  const handleClik = (item) => {
+  const handleClik = (data) => {
+    let categoryDrop = category.map((item) => item.value == data.category);
     setModal(true);
     formik.setValues({
-      title: item.title,
-      price: item.price,
-      desc: item.desc,
-      storeCount: item.storeCount,
+      title: data.title,
+      price: data.price,
+      desc: data.desc,
+      storeCount: data.storeCount,
+      category: categoryDrop,
     });
-    setIsEdit({ type: true, data: item });
+    setIsEdit({ type: true, data: data });
   };
   const handleClikDelete = (id) => {
     setRefresh(false);
@@ -164,7 +178,7 @@ export default () => {
         <>
           <div className="absolute z-50 top-0 w-full left-0 bg-[#000000c6]">
             <div className="flex justify-center items-center h-screen">
-              <div className="bg-white rounded-md p-10 md:min-w-[400px]">
+              <div className="bg-white max-h-[80vh] overflow-y-auto rounded-md p-10 md:min-w-[400px]">
                 <h1 className="pb-5 text-center text-xl lg:text-3xl font-serif font-medium">
                   Product qo'shish
                 </h1>
@@ -204,6 +218,17 @@ export default () => {
                     type="text"
                     onChange={formik.handleChange}
                     value={formik.values.desc}
+                  />
+                  <Dropdown
+                    value={formik.values.category}
+                    border={`2px solid #bfbfbf`}
+                    padding="13px 20px"
+                    width="100%"
+                    options={categorys}
+                    placeholder="Kategoriyani tanlang"
+                    handleItem={(item) =>
+                      formik.setFieldValue("category", item)
+                    }
                   />
                   <label className="text-lg pl-3 font-medium" htmlFor="title">
                     Mahsulot soni

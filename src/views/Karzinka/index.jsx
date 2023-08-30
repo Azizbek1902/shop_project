@@ -5,6 +5,7 @@ import { useCart } from "react-use-cart";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { updateCheck } from "../../redux/actions/product";
+import products from "../../services/products";
 
 export default () => {
   const navigate = useNavigate();
@@ -37,16 +38,19 @@ export default () => {
       </>
     );
   const hanfldeClik = (data) => {
-    removeItem(data.id);
+    removeItem(data._id);
     let newData = {
-      id: data.id,
+      id: data._id,
       img: data.img,
       title: data.title,
       desc: data.desc,
       price: data.price,
-      checked: false,
+      status: false,
     };
-    dispatch(updateCheck(newData));
+    products
+      .edit(data._id, newData)
+      .then()
+      .catch((err) => console.log(err));
   };
   return (
     <>

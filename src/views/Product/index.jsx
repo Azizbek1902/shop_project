@@ -1,32 +1,43 @@
 import { MdOutlineShoppingCartCheckout } from "react-icons/md";
 import { BiCheckCircle } from "react-icons/bi";
 import { TiShoppingCart } from "react-icons/ti";
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { updateCheck } from "../../redux/actions/product";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "react-use-cart";
+import products from "../../services/products";
 
 export default () => {
   const { addItem, items, totalUniqueItems } = useCart();
-  const dataProduct = useSelector((state) => state.productReducer.products);
-  const dispatch = useDispatch();
+  const [dataProduct, setDataProduct] = useState([]);
+  const [refresh, setRefresh] = useState(false);
   const navigate = useNavigate();
+  useEffect(() => {
+    products
+      .getAll()
+      .then((res) => {
+        setDataProduct(res);
+        setRefresh(true);
+      })
+      .catch((err) => console.log(err));
+  }, [refresh]);
   const handleClik = (data) => {
     dataProduct.map((item) => {
-      if (item.id == data.id) {
-        if (!item.checked) {
+      if (item.id == data._id) {
+        if (!item.status) {
           console.log(item, "item");
           let newData = {
-            id: data.id,
+            id: data._id,
             img: data.img,
             title: data.title,
             desc: data.desc,
             price: data.price,
-            checked: true,
+            status: true,
           };
           addItem(data);
-          dispatch(updateCheck(newData));
+          products
+            .edit(data._id, newData)
+            .then()
+            .catch((err) => console.log(err));
         }
       } else {
         console.log("errr");
@@ -88,9 +99,9 @@ export default () => {
                     <button
                       onClick={() => handleClik(item)}
                       className={`text-lg outline-none flex justify-center items-center px-5 py-2 rounded-md text-white font-medium
-           font-sans ${item.checked ? "bg-[#30B545]" : "bg-[#EE8108]"}`}
+           font-sans ${item.status ? "bg-[#30B545]" : "bg-[#EE8108]"}`}
                     >
-                      {item.checked ? (
+                      {item.status ? (
                         <BiCheckCircle color="white" size={25} />
                       ) : (
                         <TiShoppingCart color="white" size={25} />
