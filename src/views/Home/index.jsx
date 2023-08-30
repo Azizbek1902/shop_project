@@ -43,7 +43,7 @@ export default () => {
       formData.append("price", values.price);
       formData.append("storeCount", values.storeCount);
       formData.append("desc", values.desc);
-      formData.append("category", values.category.value);
+      formData.append("category", values.category._id);
       formData.append("file", files[0]);
       if (isEdit.type) {
         products
@@ -53,7 +53,7 @@ export default () => {
       } else {
         products
           .create(formData)
-          .then()
+          .then(res => console.log(res))
           .catch((err) => console.log(err));
       }
       formik.resetForm();
